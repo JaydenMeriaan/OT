@@ -1,5 +1,5 @@
 <?php
-session_start();
+
 require 'db.php';
 global $db;
 $error = '';
@@ -14,8 +14,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['titel'], $_POST['genre
         $error = "Zowel de titel, genre als het cijfer moeten ingevuld worden!";
     } else {
 
-        // Debugging: Controleer of de gegevens goed binnenkomen
-        var_dump($title, $genre, $cijfer);  // Verwijder deze later
 
         $stmt = $db->prepare("SELECT * FROM film WHERE titel = :titel");
         $stmt->bindParam(':titel', $title);
@@ -26,21 +24,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['titel'], $_POST['genre
             $error = "Deze film bestaat al!";
         } else {
 
-            // Voeg de film toe
+
             $stmt = $db->prepare("INSERT INTO film (titel, genre) VALUES (:titel, :genre)");
             $stmt->bindParam(":titel", $title);
             $stmt->bindParam(":genre", $genre);
 
             if ($stmt->execute()) {
-                $filmId = $db->lastInsertId(); // Haal het ID van de net toegevoegde film
+                $filmId = $db->lastInsertId();
 
-                // Voeg het cijfer toe in de beoordelingstabel
-                $stmtBeoordeling = $db->prepare("INSERT INTO beoordelingen (film_id, cijfer) VALUES (:film_id, :cijfer)");
+                $stmtBeoordeling = $db->prepare("INSERT INTO beoordeling (film_id, cijfer) VALUES (:film_id, :cijfer)");
                 $stmtBeoordeling->bindParam(":film_id", $filmId);
                 $stmtBeoordeling->bindParam(":cijfer", $cijfer);
 
                 if ($stmtBeoordeling->execute()) {
                     $success = "Film '$title' van genre '$genre' is succesvol toegevoegd met cijfer '$cijfer'!";
+
+                    header("Location: index.php?");
+                    exit;
                 } else {
                     $error = "Er is iets misgegaan bij het opslaan van de beoordeling.";
                 }
@@ -79,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['titel'], $_POST['genre
 </form>
 
 <?php
-// Debugging: als er een fout is, toon de foutmelding
+// Als er een fout is, toon de foutmelding
 if ($error) {
     echo "<p>$error</p>";
 }

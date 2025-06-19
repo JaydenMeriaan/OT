@@ -25,7 +25,8 @@ $films = $query->fetchAll(PDO::FETCH_ASSOC);
             <h1 class="movie-counter"><?php echo $film['id']; ?></h1>
             <h1 class="movie-name"><?php echo $film['titel']; ?></h1>
             <a href="detail.php?id=<?php echo $film['id']; ?>">Bekijk beoordelingen</a>
-            <a href="delete.php?id=<?php echo $film['id']; ?>" onclick="return confirm('Weet je zeker dat je deze film wilt verwijderen?')">Verwijder film</a>
+            <a href="delete.php?id=<?php echo $film['id']; ?>">Verwijder film</a>
+            <a href="update.php?id=<?php echo $film['id']; ?>">Bewerk film</a>
         </div>
     </article>
 <?php endforeach; ?>
